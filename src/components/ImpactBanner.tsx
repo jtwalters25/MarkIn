@@ -11,7 +11,7 @@ export default function ImpactBanner({ impact }: { impact?: ImpactReport }) {
     return (
       <div className="text-xs text-text-dim flex items-center gap-2">
         <span className="text-diff-add">✓</span>
-        Impact scan: this text appears nowhere else in the repo.
+        This text appears nowhere else on your site.
       </div>
     );
   }
@@ -23,8 +23,8 @@ export default function ImpactBanner({ impact }: { impact?: ImpactReport }) {
         <div className="text-sm flex-1 min-w-0">
           <div className="flex items-center justify-between gap-3">
             <div className="font-semibold text-gold">
-              This text also appears in {impact.totalCount} other{" "}
-              {impact.totalCount === 1 ? "file" : "files"}
+              This text also appears on {impact.totalCount} other{" "}
+              {impact.totalCount === 1 ? "page" : "pages"}
             </div>
             <button
               onClick={() => setOpen((o) => !o)}
@@ -34,20 +34,13 @@ export default function ImpactBanner({ impact }: { impact?: ImpactReport }) {
             </button>
           </div>
           <p className="text-text-dim text-xs mt-1">
-            Only the file above is being changed. The others stay as-is.
+            Only the page above is being changed. The others stay as-is.
           </p>
           {open && impact.hits.length > 0 && (
             <ul className="mt-3 space-y-1">
               {impact.hits.map((h) => (
                 <li key={h.path} className="text-xs">
-                  <a
-                    href={h.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-mono text-text-muted hover:text-gold"
-                  >
-                    {h.path} ↗
-                  </a>
+                  <span className="text-text-muted">{h.path}</span>
                 </li>
               ))}
             </ul>

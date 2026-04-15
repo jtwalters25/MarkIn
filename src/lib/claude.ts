@@ -9,11 +9,13 @@ const anthropic = new Anthropic({
 const MODEL = "claude-sonnet-4-6";
 
 function extractJSON(text: string): string {
-  const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (fence) return fence[1].trim();
-  const firstBrace = text.search(/[\[{]/);
-  if (firstBrace === -1) return text.trim();
-  return text.slice(firstBrace).trim();
+  let cleaned = text.trim();
+  const fence = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fence) cleaned = fence[1].trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+  const firstBrace = cleaned.search(/[\[{]/);
+  if (firstBrace === -1) return cleaned;
+  return cleaned.slice(firstBrace).trim();
 }
 
 export async function identifyFiles(
@@ -33,7 +35,9 @@ export async function identifyFiles(
   });
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
+  console.log("[analyze] identifyFiles raw Claude response:", text);
   const parsed = JSON.parse(extractJSON(text));
+  console.log("[analyze] identifyFiles parsed result:", parsed);
   return Array.isArray(parsed) ? parsed : [parsed];
 }
 
@@ -55,7 +59,14 @@ export async function generateEdit(
   });
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
+  console.log("[analyze] generateEdit raw Claude response:", text);
   const parsed = JSON.parse(extractJSON(text));
+
+  if (parsed.original_text == null || parsed.new_text == null) {
+    throw new Error(
+      "Couldn't generate a valid edit for that request. Try being more specific about what text to change."
+    );
+  }
 
   return {
     file: filePath,

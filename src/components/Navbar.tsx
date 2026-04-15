@@ -18,12 +18,14 @@ export default function Navbar({ activeRepo }: { activeRepo?: string }) {
             <div className="w-7 h-7 rounded-md bg-gold/10 border border-gold/30 flex items-center justify-center">
               <span className="text-gold font-bold text-sm">M</span>
             </div>
-            <span className="font-semibold tracking-tight">MarkIn</span>
+            <span className="font-semibold tracking-tight">
+              <span className="text-text">Mark</span><span className="text-gold">In</span>
+            </span>
           </Link>
           {activeRepo && (
             <div className="hidden sm:flex items-center gap-2 text-sm min-w-0">
-              <span className="text-text-dim">/</span>
-              <span className="font-mono text-text-muted truncate">{activeRepo}</span>
+              <span className="text-text-dim">·</span>
+              <span className="text-text-muted truncate">{activeRepo.split("/").pop()}</span>
             </div>
           )}
         </div>
@@ -68,7 +70,7 @@ export default function Navbar({ activeRepo }: { activeRepo?: string }) {
           <Link onClick={() => setOpen(false)} href="/dashboard/scheduled" className="text-text-muted hover:text-text py-1">Scheduled</Link>
           <Link onClick={() => setOpen(false)} href="/dashboard/history" className="text-text-muted hover:text-text py-1">History</Link>
           {activeRepo && (
-            <div className="text-xs text-text-dim font-mono pt-2 border-t border-border-subtle">{activeRepo}</div>
+            <div className="text-xs text-text-dim pt-2 border-t border-border-subtle">{activeRepo.split("/").pop()}</div>
           )}
           {session?.user && (
             <button onClick={() => signOut({ callbackUrl: "/" })} className="text-left text-text-dim hover:text-text text-xs pt-2">

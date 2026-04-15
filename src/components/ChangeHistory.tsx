@@ -6,7 +6,7 @@ export default function ChangeHistory({ changes }: { changes: Change[] }) {
   if (!changes.length) {
     return (
       <div className="card p-8 text-center text-text-muted">
-        No changes yet. Your shipped edits will appear here.
+        No changes yet. Your published updates will appear here.
       </div>
     );
   }
@@ -33,7 +33,7 @@ export default function ChangeHistory({ changes }: { changes: Change[] }) {
                 rel="noreferrer"
                 className="text-gold text-sm hover:underline whitespace-nowrap"
               >
-                PR #{c.prNumber} ↗
+                Change #{c.prNumber} ↗
               </a>
             )}
           </div>
@@ -47,6 +47,11 @@ export default function ChangeHistory({ changes }: { changes: Change[] }) {
 }
 
 function StatusBadge({ status }: { status: Change["status"] }) {
+  const labels: Record<Change["status"], string> = {
+    submitted: "in review",
+    merged: "live",
+    closed: "declined",
+  };
   const map: Record<Change["status"], string> = {
     submitted: "text-gold border-gold/40",
     merged: "text-diff-add border-diff-add/40",
@@ -54,7 +59,7 @@ function StatusBadge({ status }: { status: Change["status"] }) {
   };
   return (
     <span className={`px-1.5 py-0.5 rounded border text-[10px] uppercase tracking-wider ${map[status]}`}>
-      {status}
+      {labels[status]}
     </span>
   );
 }

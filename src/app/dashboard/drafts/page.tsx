@@ -31,7 +31,7 @@ export default function DraftsPage() {
         <header>
           <h1 className="text-2xl font-semibold">Drafts</h1>
           <p className="text-text-muted text-sm mt-1">
-            Saved-for-later changes. Resume editing, ship now, or discard.
+            Changes you saved for later. Resume editing, send for review, or discard.
           </p>
         </header>
 
@@ -48,7 +48,7 @@ export default function DraftsPage() {
                 key={d.id}
                 draft={d}
                 onResume={() => (window.location.href = "/dashboard")}
-                onSubmit={() => alert("TODO: submit draft as PR via /api/submit")}
+                onSubmit={() => alert("Open the draft and send it from the editor.")}
                 onDiscard={discard}
               />
             ))}

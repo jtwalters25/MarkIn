@@ -23,7 +23,7 @@ export default function HistoryPage() {
         <header>
           <h1 className="text-2xl font-semibold">History</h1>
           <p className="text-text-muted text-sm mt-1">
-            Every change MarkIn has shipped from your account.
+            Every change you&apos;ve sent through MarkIn.
           </p>
         </header>
 

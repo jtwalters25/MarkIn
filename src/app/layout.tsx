@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 import ThemeScript from "./theme-script";
 
 export const metadata: Metadata = {
-  title: "MarkIn — GitOut.",
+  title: "MarkIn. GitOut.",
   description: "Plain English editing for your marketing site. No Git required.",
   icons: { icon: "/favicon.svg" },
 };

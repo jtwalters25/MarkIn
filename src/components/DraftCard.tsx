@@ -53,7 +53,7 @@ export default function DraftCard({ draft, onResume, onSubmit, onDiscard }: Prop
           <button onClick={() => onResume(draft)} className="btn-ghost">Resume</button>
         )}
         {onSubmit && (
-          <button onClick={() => onSubmit(draft)} className="btn-gold">Submit PR</button>
+          <button onClick={() => onSubmit(draft)} className="btn-gold">Send for review</button>
         )}
         {onDiscard && (
           <button onClick={() => onDiscard(draft)} className="btn-danger">Discard</button>

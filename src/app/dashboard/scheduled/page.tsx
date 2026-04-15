@@ -30,7 +30,7 @@ export default function ScheduledPage() {
         <header>
           <h1 className="text-2xl font-semibold">Scheduled</h1>
           <p className="text-text-muted text-sm mt-1">
-            PRs that will open automatically at the time you set.
+            Changes that will be sent for review automatically at the time you set.
           </p>
         </header>
 
@@ -38,7 +38,7 @@ export default function ScheduledPage() {
           <div className="text-text-dim">Loading…</div>
         ) : items.length === 0 ? (
           <div className="card p-8 text-center text-text-muted">
-            Nothing scheduled. From the editor, choose &ldquo;Schedule for later&rdquo; instead of &ldquo;Ship it.&rdquo;
+            Nothing scheduled. From the editor, pick &ldquo;Schedule for later&rdquo; instead of &ldquo;Send for review.&rdquo;
           </div>
         ) : (
           <ul className="space-y-3">
@@ -52,7 +52,7 @@ export default function ScheduledPage() {
                       <span>·</span>
                       <span>Fires {new Date(s.scheduledFor).toLocaleString()}</span>
                       <span>·</span>
-                      <span>{s.edits.length} file{s.edits.length === 1 ? "" : "s"}</span>
+                      <span>{s.edits.length} change{s.edits.length === 1 ? "" : "s"}</span>
                     </div>
                     {s.failureReason && (
                       <div className="mt-2 text-xs text-diff-remove">{s.failureReason}</div>
@@ -61,7 +61,7 @@ export default function ScheduledPage() {
                   <div className="flex gap-2 shrink-0">
                     {s.prUrl && (
                       <a href={s.prUrl} target="_blank" rel="noreferrer" className="text-gold text-sm hover:underline whitespace-nowrap">
-                        PR #{s.prNumber} ↗
+                        Change #{s.prNumber} ↗
                       </a>
                     )}
                     {s.status === "pending" && (
@@ -92,9 +92,15 @@ function StatusBadge({ status }: { status: ScheduledPR["status"] }) {
     failed: "text-diff-remove border-diff-remove/40",
     cancelled: "text-text-dim border-border",
   };
+  const labels: Record<ScheduledPR["status"], string> = {
+    pending: "scheduled",
+    submitted: "sent",
+    failed: "failed",
+    cancelled: "cancelled",
+  };
   return (
     <span className={`px-1.5 py-0.5 rounded border text-[10px] uppercase tracking-wider ${map[status]}`}>
-      {status}
+      {labels[status]}
     </span>
   );
 }

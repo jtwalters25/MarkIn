@@ -4,9 +4,9 @@ import type { ThinkingStep } from "@/types";
 
 export const DEFAULT_STEPS: ThinkingStep[] = [
   { id: "understand", label: "Understanding your request…", status: "pending" },
-  { id: "scan", label: "Scanning repository files…", status: "pending" },
-  { id: "identify", label: "Identifying the right file…", status: "pending" },
-  { id: "generate", label: "Generating the change…", status: "pending" },
+  { id: "scan", label: "Scanning your site…", status: "pending" },
+  { id: "identify", label: "Finding the right page…", status: "pending" },
+  { id: "generate", label: "Drafting the change…", status: "pending" },
   { id: "preview", label: "Preparing preview…", status: "pending" },
 ];
 

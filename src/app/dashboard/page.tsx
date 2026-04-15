@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 import RepoSelector from "@/components/RepoSelector";
 import ChangeInput from "@/components/ChangeInput";
-import DiffPreview from "@/components/DiffPreview";
+import PlainPreview from "@/components/PlainPreview";
 import GuardrailBanner from "@/components/GuardrailBanner";
 import ImpactBanner from "@/components/ImpactBanner";
 import SchedulePicker from "@/components/SchedulePicker";
@@ -90,7 +90,7 @@ export default function DashboardPage() {
     try {
       if (DEMO) {
         await new Promise((r) => setTimeout(r, 800));
-        alert(`Demo mode: would open PR with ${result.edits.length} file change(s) → https://github.com/demo-org/marketing-site/pull/99`);
+        alert(`Demo mode: would send ${result.edits.length} change(s) for review.`);
         setSubmitting(false);
         return;
       }
@@ -150,17 +150,17 @@ export default function DashboardPage() {
           <div className="card p-3 px-4 border-gold/40 text-sm flex flex-wrap items-center justify-between gap-2">
             <span className="text-text-muted">
               <span className="text-gold font-mono mr-2">DEMO MODE</span>
-              Canned data — no GitHub connection needed. Set{" "}
+              Canned data. No GitHub connection needed. Set{" "}
               <code className="text-gold">NEXT_PUBLIC_DEMO_MODE=false</code> to go live.
             </span>
           </div>
         )}
         <header>
           <h1 className="text-xl sm:text-2xl font-semibold">
-            Hi {session?.user?.name?.split(" ")[0] ?? (DEMO ? "there (demo)" : "there")} — what should we change?
+            Hi {session?.user?.name?.split(" ")[0] ?? (DEMO ? "there (demo)" : "there")}, what should we change?
           </h1>
           <p className="text-text-muted text-sm mt-1">
-            Pick a repo, describe the change, preview the diff, ship a PR.
+            Pick a site, describe the change, preview it, and send for review.
           </p>
         </header>
 
@@ -176,7 +176,15 @@ export default function DashboardPage() {
         )}
 
         {error && (
-          <div className="card p-4 border-diff-remove/40 text-diff-remove text-sm">
+          <div
+            role="alert"
+            className="rounded-lg p-4 text-sm border"
+            style={{
+              backgroundColor: "rgba(200, 80, 60, 0.1)",
+              borderColor: "#c8503c",
+              color: "#c8503c",
+            }}
+          >
             {error}
           </div>
         )}
@@ -186,7 +194,7 @@ export default function DashboardPage() {
             {result.edits.length > 1 && (
               <div className="text-sm text-text-muted">
                 <span className="text-gold font-mono mr-2">BATCH</span>
-                {result.edits.length} coordinated edits across {result.edits.length} files. All ship in one PR.
+                {result.edits.length} coordinated changes. They go live together as one Change Request.
               </div>
             )}
 
@@ -199,7 +207,7 @@ export default function DashboardPage() {
                 )}
                 <GuardrailBanner guardrails={b.guardrails} />
                 <ImpactBanner impact={b.impact} />
-                <DiffPreview edit={b.edit} fileContent={b.fileContent} />
+                <PlainPreview edit={b.edit} fileContent={b.fileContent} />
               </div>
             ))}
 
@@ -211,12 +219,12 @@ export default function DashboardPage() {
                 title={anyBlocked ? "One or more edits are blocked by brand guardrails" : undefined}
               >
                 {submitting
-                  ? "Opening PR…"
+                  ? "Sending…"
                   : anyBlocked
                   ? "Blocked"
                   : result.edits.length > 1
-                  ? `Ship all ${result.edits.length} — open PR`
-                  : "Ship it — open PR"}
+                  ? `Send all ${result.edits.length} for review`
+                  : "Send for review"}
               </button>
               <button onClick={saveDraft} disabled={savedDraft} className="btn-ghost">
                 {savedDraft ? "Saved" : "Save for later"}
@@ -226,7 +234,7 @@ export default function DashboardPage() {
                 onSchedule={async (iso) => {
                   if (!repo || !result) return;
                   if (DEMO) {
-                    alert(`Demo mode: would schedule PR for ${new Date(iso).toLocaleString()}`);
+                    alert(`Demo mode: change scheduled for ${new Date(iso).toLocaleString()}`);
                     return;
                   }
                   const res = await fetch("/api/schedule", {

@@ -51,7 +51,7 @@ export default function GuardrailBanner({ guardrails }: Props) {
     return (
       <div className="text-xs text-text-dim flex items-center gap-2">
         <span className="text-gold">✓</span>
-        Brand guardrails active — edit passed all rules.
+        Brand guardrails active. Change passed all rules.
       </div>
     );
   }

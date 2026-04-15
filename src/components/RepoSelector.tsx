@@ -17,7 +17,7 @@ export default function RepoSelector({ value, onChange }: Props) {
     let cancelled = false;
     fetch("/api/repos")
       .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json()).error ?? "Failed to load repos");
+        if (!r.ok) throw new Error((await r.json()).error ?? "Failed to load sites");
         return r.json();
       })
       .then((data: { repos: Repo[] }) => {
@@ -30,14 +30,14 @@ export default function RepoSelector({ value, onChange }: Props) {
     return () => { cancelled = true; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (loading) return <div className="text-text-dim text-sm">Loading repos…</div>;
+  if (loading) return <div className="text-text-dim text-sm">Loading your sites…</div>;
   if (error) return <div className="text-diff-remove text-sm">{error}</div>;
-  if (!repos.length) return <div className="text-text-dim text-sm">No repos found.</div>;
+  if (!repos.length) return <div className="text-text-dim text-sm">No sites found.</div>;
 
   return (
     <div>
       <label className="block text-xs uppercase tracking-widest text-text-dim mb-2">
-        Repository
+        Site
       </label>
       <select
         className="input"
@@ -49,7 +49,7 @@ export default function RepoSelector({ value, onChange }: Props) {
       >
         {repos.map((r) => (
           <option key={r.id} value={r.fullName}>
-            {r.fullName} {r.private ? "🔒" : ""} · {r.defaultBranch}
+            {r.name} {r.private ? "🔒" : ""}
           </option>
         ))}
       </select>

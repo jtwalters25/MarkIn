@@ -46,8 +46,14 @@ export async function POST(req: Request) {
     }
 
     const targets = await identifyFiles(filtered, request);
-    if (!targets.length) {
-      return NextResponse.json({ error: "Could not identify a file to change" }, { status: 422 });
+    if (!targets || targets.length === 0 || !targets[0]?.file) {
+      return NextResponse.json(
+        {
+          error:
+            "Couldn't find a matching file for that request. Try being more specific about which page or file to edit.",
+        },
+        { status: 422 }
+      );
     }
 
     const limit = detectBatchIntent(request) ? MAX_BATCH : 1;
@@ -70,6 +76,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ request, targets, edits });
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
+    console.error("[analyze] error:", e);
+    const message = e instanceof Error ? e.message : "Something went wrong analyzing that request.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

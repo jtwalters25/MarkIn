@@ -35,7 +35,7 @@ export default function ChangeInput({ onSubmit, disabled, placeholder }: Props) 
           disabled={disabled || !value.trim()}
           onClick={() => onSubmit(value.trim())}
         >
-          Preview change
+          Preview the change
         </button>
         <span className="text-text-dim text-xs ml-2">Try:</span>
         {EXAMPLES.map((ex) => (
