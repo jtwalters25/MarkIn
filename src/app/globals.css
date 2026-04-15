@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark theme (default) — deep, warm, low-noise */
+:root {
+  color-scheme: dark;
+  --bg: #0d0b08;
+  --bg-raised: #131110;
+  --bg-subtle: #1a1612;
+  --border: #252118;
+  --border-subtle: #1f1c15;
+  --text: #e8e2d4;
+  --text-muted: #8a8474;
+  --text-dim: #5a5547;
+  --gold: #c9a227;
+  --gold-dim: #9c7e1e;
+  --gold-glow: #e6b830;
+  --diff-add: #569c3c;
+  --diff-add-bg: rgba(86, 156, 60, 0.12);
+  --diff-remove: #c8503c;
+  --diff-remove-bg: rgba(200, 80, 60, 0.12);
+  --selection-bg: rgba(201, 162, 39, 0.3);
+  --selection-fg: #fff8e0;
+}
+
+/* Light theme — warm cream, no harsh white */
+html.light {
+  color-scheme: light;
+  --bg: #f6f1e4;
+  --bg-raised: #fbf7ec;
+  --bg-subtle: #efe8d6;
+  --border: #d9cfb8;
+  --border-subtle: #e6dcc4;
+  --text: #2a241a;
+  --text-muted: #6a6151;
+  --text-dim: #9a9180;
+  --gold: #a07a14;
+  --gold-dim: #7d5f0f;
+  --gold-glow: #c79224;
+  --diff-add: #3f7a2a;
+  --diff-add-bg: rgba(63, 122, 42, 0.14);
+  --diff-remove: #a8402c;
+  --diff-remove-bg: rgba(168, 64, 44, 0.12);
+  --selection-bg: rgba(160, 122, 20, 0.25);
+  --selection-fg: #2a241a;
+}
+
+html, body {
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-fg);
+}
+
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-md
+           bg-gold text-bg font-medium transition
+           hover:bg-gold-glow active:bg-gold-dim
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md
+           border border-border text-text-muted transition
+           hover:border-gold hover:text-gold;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md
+           border border-border text-diff-remove transition
+           hover:border-diff-remove;
+  }
+  .card {
+    @apply bg-bg-raised border border-border rounded-lg;
+  }
+  .input {
+    @apply w-full bg-bg-raised border border-border rounded-md px-4 py-3
+           text-text placeholder-text-dim
+           focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold;
+  }
+}

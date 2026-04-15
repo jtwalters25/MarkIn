@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  githubId  String   @unique
+  avatarUrl String?
+  repos     Repo[]
+  changes   Change[]
+  drafts    Draft[]
+  createdAt DateTime @default(now())
+}
+
+model Repo {
+  id        String   @id @default(cuid())
+  owner     String
+  name      String
+  branch    String   @default("main")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  changes   Change[]
+  drafts    Draft[]
+  createdAt DateTime @default(now())
+
+  @@unique([owner, name, userId])
+}
+
+model Change {
+  id          String   @id @default(cuid())
+  request     String
+  file        String
+  oldText     String
+  newText     String
+  explanation String
+  prUrl       String?
+  prNumber    Int?
+  status      String   @default("submitted")
+  repoId      String
+  repo        Repo     @relation(fields: [repoId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Draft {
+  id          String   @id @default(cuid())
+  request     String
+  file        String
+  oldText     String
+  newText     String
+  explanation String
+  repoId      String
+  repo        Repo     @relation(fields: [repoId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+}
