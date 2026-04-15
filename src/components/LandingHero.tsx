@@ -14,11 +14,8 @@ export default function LandingHero() {
         {demo ? "Demo mode — no signup needed" : "Now in private beta"}
       </div>
       <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight">
-        Mark<span className="text-gold">In</span>.
+        Your marketing team deserves Mark<span className="text-gold">In</span>.
       </h1>
-      <p className="mt-3 sm:mt-4 text-2xl sm:text-3xl md:text-4xl text-text-muted font-light tracking-tight">
-        GitOut.
-      </p>
       <p className="mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg text-text leading-relaxed">
         Plain English editing for your marketing site. Marketers describe changes,
         engineers approve PRs, no one touches a terminal.
