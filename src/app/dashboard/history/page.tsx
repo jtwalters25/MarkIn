@@ -20,11 +20,20 @@ export default function HistoryPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1 px-4 sm:px-6 py-8 sm:py-10 max-w-4xl mx-auto w-full space-y-6">
-        <header>
-          <h1 className="text-2xl font-semibold">History</h1>
-          <p className="text-text-muted text-sm mt-1">
-            Every change you&apos;ve sent through MarkIn.
-          </p>
+        <header className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">History</h1>
+            <p className="text-text-muted text-sm mt-1">
+              Every change you&apos;ve sent through MarkIn.
+            </p>
+          </div>
+          <a
+            href="/api/history/export"
+            className="btn-ghost text-sm whitespace-nowrap"
+            download
+          >
+            Export CSV
+          </a>
         </header>
 
         {loading ? (
@@ -32,8 +41,6 @@ export default function HistoryPage() {
         ) : (
           <ChangeHistory changes={changes} />
         )}
-
-        {/* TODO: audit trail export (CSV/PDF for compliance) */}
       </main>
     </div>
   );

@@ -34,9 +34,30 @@ export async function POST(req: Request) {
   const userId = await getUserId();
   if (!userId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-  const { repoOwner, repoName, request, file, oldText, newText, explanation } = await req.json();
-  if (!repoOwner || !repoName || !file || !oldText || !newText) {
+  const body = await req.json();
+  const { repoOwner, repoName, request } = body;
+
+  type IncomingEdit = {
+    file: string;
+    originalText?: string;
+    oldText?: string;
+    newText: string;
+    explanation?: string;
+  };
+  const edits: IncomingEdit[] = Array.isArray(body.edits) && body.edits.length
+    ? body.edits
+    : body.file
+    ? [{ file: body.file, originalText: body.oldText, newText: body.newText, explanation: body.explanation }]
+    : [];
+
+  if (!repoOwner || !repoName || edits.length === 0) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+  for (const e of edits) {
+    const orig = e.originalText ?? e.oldText;
+    if (!e.file || !orig || !e.newText) {
+      return NextResponse.json({ error: "Each edit needs file, originalText, newText" }, { status: 400 });
+    }
   }
 
   const repo = await prisma.repo.upsert({
@@ -45,13 +66,22 @@ export async function POST(req: Request) {
     create: { owner: repoOwner, name: repoName, userId },
   });
 
+  const normalized = edits.map((e) => ({
+    file: e.file,
+    originalText: e.originalText ?? e.oldText!,
+    newText: e.newText,
+    explanation: e.explanation ?? "",
+  }));
+  const first = normalized[0];
+
   const draft = await prisma.draft.create({
     data: {
       request: request ?? "",
-      file,
-      oldText,
-      newText,
-      explanation: explanation ?? "",
+      file: first.file,
+      oldText: first.originalText,
+      newText: first.newText,
+      explanation: first.explanation,
+      editsJson: JSON.stringify(normalized),
       repoId: repo.id,
       userId,
     },

@@ -115,10 +115,14 @@ model Change {
 model Draft {
   id          String   @id @default(cuid())
   request     String
+  // Legacy single-edit fields (kept for back-compat with drafts saved before multi-file).
   file        String
   oldText     String
   newText     String
   explanation String
+  // JSON-serialized array of {file, originalText, newText, explanation}.
+  // When present, this is the source of truth for the draft's edits.
+  editsJson   String?
   repoId      String
   repo        Repo     @relation(fields: [repoId], references: [id], onDelete: Cascade)
   userId      String

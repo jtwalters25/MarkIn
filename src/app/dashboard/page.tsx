@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import RepoSelector from "@/components/RepoSelector";
 import ChangeInput from "@/components/ChangeInput";
 import PlainPreview from "@/components/PlainPreview";
+import LivePreview from "@/components/LivePreview";
 import GuardrailBanner from "@/components/GuardrailBanner";
 import ImpactBanner from "@/components/ImpactBanner";
 import SchedulePicker from "@/components/SchedulePicker";
@@ -122,9 +123,6 @@ export default function DashboardPage() {
 
   async function saveDraft() {
     if (!repo || !result) return;
-    // Drafts currently support a single edit — save the first one.
-    // TODO: multi-file drafts
-    const first = result.edits[0];
     const res = await fetch("/api/drafts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -132,10 +130,12 @@ export default function DashboardPage() {
         repoOwner: repo.owner,
         repoName: repo.name,
         request: result.request,
-        file: first.edit.file,
-        oldText: first.edit.originalText,
-        newText: first.edit.newText,
-        explanation: first.edit.explanation,
+        edits: result.edits.map((b) => ({
+          file: b.edit.file,
+          originalText: b.edit.originalText,
+          newText: b.edit.newText,
+          explanation: b.edit.explanation,
+        })),
       }),
     });
     if (res.ok) setSavedDraft(true);
@@ -208,6 +208,10 @@ export default function DashboardPage() {
                 <GuardrailBanner guardrails={b.guardrails} />
                 <ImpactBanner impact={b.impact} />
                 <PlainPreview edit={b.edit} fileContent={b.fileContent} />
+                <LivePreview
+                  originalText={b.edit.originalText}
+                  newText={b.edit.newText}
+                />
               </div>
             ))}
 

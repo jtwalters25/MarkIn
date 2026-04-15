@@ -83,6 +83,13 @@ export interface ScheduledPR {
   createdAt: string;
 }
 
+export interface DraftEdit {
+  file: string;
+  originalText: string;
+  newText: string;
+  explanation?: string;
+}
+
 export interface Draft {
   id: string;
   request: string;
@@ -90,6 +97,7 @@ export interface Draft {
   oldText: string;
   newText: string;
   explanation: string;
+  editsJson?: string | null;
   createdAt: string;
 }
 
