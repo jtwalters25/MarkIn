@@ -31,6 +31,7 @@ export default function Navbar({ activeRepo }: { activeRepo?: string }) {
         <nav className="hidden md:flex items-center gap-5 text-sm">
           <Link href="/dashboard" className="text-text-muted hover:text-text">Editor</Link>
           <Link href="/dashboard/drafts" className="text-text-muted hover:text-text">Drafts</Link>
+          <Link href="/dashboard/scheduled" className="text-text-muted hover:text-text">Scheduled</Link>
           <Link href="/dashboard/history" className="text-text-muted hover:text-text">History</Link>
           <ThemeToggle />
           {session?.user ? (
@@ -64,6 +65,7 @@ export default function Navbar({ activeRepo }: { activeRepo?: string }) {
         <nav className="md:hidden mt-4 flex flex-col gap-2 text-sm border-t border-border-subtle pt-4">
           <Link onClick={() => setOpen(false)} href="/dashboard" className="text-text-muted hover:text-text py-1">Editor</Link>
           <Link onClick={() => setOpen(false)} href="/dashboard/drafts" className="text-text-muted hover:text-text py-1">Drafts</Link>
+          <Link onClick={() => setOpen(false)} href="/dashboard/scheduled" className="text-text-muted hover:text-text py-1">Scheduled</Link>
           <Link onClick={() => setOpen(false)} href="/dashboard/history" className="text-text-muted hover:text-text py-1">History</Link>
           {activeRepo && (
             <div className="text-xs text-text-dim font-mono pt-2 border-t border-border-subtle">{activeRepo}</div>

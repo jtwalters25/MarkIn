@@ -47,7 +47,7 @@ export default function HomePage() {
 `;
 
 export function demoAnalyze(request: string): AnalyzeResponse {
-  // Tiny heuristic: if the request mentions a price, swap the Starter price.
+  const isBatch = /\b(everywhere|all instances|across|every page|globally)\b/i.test(request);
   const priceMatch = request.match(/\$\d+(?:\/mo)?/g);
   let original = "$29/mo";
   let next = priceMatch && priceMatch.length > 1 ? priceMatch[1] : "$49/mo";
@@ -57,15 +57,9 @@ export function demoAnalyze(request: string): AnalyzeResponse {
     next = "Ship faster, without the merge.";
   }
 
-  return {
-    request,
-    targets: [
-      {
-        file: "src/app/page.tsx",
-        confidence: 0.94,
-        reason: "Homepage component containing the targeted text",
-      },
-    ],
+  const guardrails = { allowed: true, warnings: [] as string[], configActive: false };
+
+  const primary = {
     edit: {
       file: "src/app/page.tsx",
       originalText: original,
@@ -74,6 +68,38 @@ export function demoAnalyze(request: string): AnalyzeResponse {
       explanation: `Updated "${original}" → "${next}" on the homepage (demo mode).`,
     },
     fileContent: DEMO_FILE_CONTENT,
+    guardrails,
+    impact: {
+      query: original,
+      totalCount: 2,
+      hits: [
+        { path: "src/app/pricing/page.tsx", url: "https://github.com/demo-org/marketing-site/blob/main/src/app/pricing/page.tsx" },
+        { path: "src/components/PricingCard.tsx", url: "https://github.com/demo-org/marketing-site/blob/main/src/components/PricingCard.tsx" },
+      ],
+      searched: true,
+    },
+  };
+
+  const secondary = {
+    edit: {
+      file: "src/app/pricing/page.tsx",
+      originalText: original,
+      newText: next,
+      lineNumber: 8,
+      explanation: `Updated "${original}" → "${next}" on the pricing page (demo mode).`,
+    },
+    fileContent: `export default function Pricing() {\n  return <div>Starter ${original} per month</div>;\n}\n`,
+    guardrails,
+    impact: { query: original, totalCount: 1, hits: [], searched: true },
+  };
+
+  return {
+    request,
+    targets: [
+      { file: "src/app/page.tsx", confidence: 0.94, reason: "Homepage" },
+      ...(isBatch ? [{ file: "src/app/pricing/page.tsx", confidence: 0.88, reason: "Pricing page" }] : []),
+    ],
+    edits: isBatch ? [primary, secondary] : [primary],
   };
 }
 

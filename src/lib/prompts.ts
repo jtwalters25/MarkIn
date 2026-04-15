@@ -7,6 +7,7 @@ Rules:
 - Prefer content files (TSX/JSX pages, markdown, JSON configs) over utility files
 - If the request mentions a specific page (homepage, about, pricing), look for the corresponding page file
 - If the request is about data (pricing, features, team info), look for config/data files
+- If the request implies a change across multiple places ("everywhere", "all instances", "across the site", "every page"), return ALL relevant files (up to 5). Otherwise return a single file.
 
 Return ONLY a JSON array:
 [{ "file": "path/to/file.tsx", "confidence": 0.95, "reason": "This file contains the homepage pricing display" }]`;

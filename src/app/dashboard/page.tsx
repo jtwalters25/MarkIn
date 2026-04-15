@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 import RepoSelector from "@/components/RepoSelector";
 import ChangeInput from "@/components/ChangeInput";
 import DiffPreview from "@/components/DiffPreview";
+import GuardrailBanner from "@/components/GuardrailBanner";
+import ImpactBanner from "@/components/ImpactBanner";
+import SchedulePicker from "@/components/SchedulePicker";
 import ThinkingSteps, { DEFAULT_STEPS } from "@/components/ThinkingSteps";
 import type { AnalyzeResponse, Repo, ThinkingStep } from "@/types";
 
@@ -13,6 +17,14 @@ const DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!DEMO && status === "unauthenticated") {
+      router.replace("/");
+    }
+  }, [status, router]);
+
   const [repo, setRepo] = useState<Repo | null>(null);
   const [request, setRequest] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
@@ -22,17 +34,11 @@ export default function DashboardPage() {
   const [submitting, setSubmitting] = useState(false);
   const [savedDraft, setSavedDraft] = useState(false);
 
-  if (!DEMO && status === "loading") {
+  if (!DEMO && (status === "loading" || status === "unauthenticated")) {
     return <div className="p-12 text-text-muted">Loading…</div>;
   }
-  if (!DEMO && status === "unauthenticated") {
-    return (
-      <div className="p-12 text-center">
-        <p className="text-text-muted mb-4">Sign in with GitHub to start editing.</p>
-        <a href="/" className="btn-gold">Back to home</a>
-      </div>
-    );
-  }
+
+  const anyBlocked = result?.edits.some((e) => e.guardrails.allowed === false) ?? false;
 
   async function runAnalyze(req: string) {
     if (!repo) return;
@@ -42,13 +48,7 @@ export default function DashboardPage() {
     setError(null);
     setSavedDraft(false);
 
-    const advance = (idx: number) =>
-      setSteps(DEFAULT_STEPS.map((s, i) => ({
-        ...s,
-        status: i < idx ? "done" : i === idx ? "active" : "pending",
-      })));
-
-    advance(0);
+    setSteps(DEFAULT_STEPS.map((s, i) => ({ ...s, status: i === 0 ? "active" : "pending" })));
     const ticker = setInterval(() => {
       setSteps((cur) => {
         const activeIdx = cur.findIndex((s) => s.status === "active");
@@ -90,7 +90,7 @@ export default function DashboardPage() {
     try {
       if (DEMO) {
         await new Promise((r) => setTimeout(r, 800));
-        alert("Demo mode: would open PR https://github.com/demo-org/marketing-site/pull/99");
+        alert(`Demo mode: would open PR with ${result.edits.length} file change(s) → https://github.com/demo-org/marketing-site/pull/99`);
         setSubmitting(false);
         return;
       }
@@ -101,11 +101,13 @@ export default function DashboardPage() {
           repoOwner: repo.owner,
           repoName: repo.name,
           baseBranch: repo.defaultBranch,
-          file: result.edit.file,
-          originalText: result.edit.originalText,
-          newText: result.edit.newText,
-          explanation: result.edit.explanation,
           request: result.request,
+          edits: result.edits.map((b) => ({
+            file: b.edit.file,
+            originalText: b.edit.originalText,
+            newText: b.edit.newText,
+            explanation: b.edit.explanation,
+          })),
         }),
       });
       const data = await res.json();
@@ -120,6 +122,9 @@ export default function DashboardPage() {
 
   async function saveDraft() {
     if (!repo || !result) return;
+    // Drafts currently support a single edit — save the first one.
+    // TODO: multi-file drafts
+    const first = result.edits[0];
     const res = await fetch("/api/drafts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -127,10 +132,10 @@ export default function DashboardPage() {
         repoOwner: repo.owner,
         repoName: repo.name,
         request: result.request,
-        file: result.edit.file,
-        oldText: result.edit.originalText,
-        newText: result.edit.newText,
-        explanation: result.edit.explanation,
+        file: first.edit.file,
+        oldText: first.edit.originalText,
+        newText: first.edit.newText,
+        explanation: first.edit.explanation,
       }),
     });
     if (res.ok) setSavedDraft(true);
@@ -178,15 +183,72 @@ export default function DashboardPage() {
 
         {result && (
           <div className="space-y-4">
-            <DiffPreview edit={result.edit} fileContent={result.fileContent} />
+            {result.edits.length > 1 && (
+              <div className="text-sm text-text-muted">
+                <span className="text-gold font-mono mr-2">BATCH</span>
+                {result.edits.length} coordinated edits across {result.edits.length} files. All ship in one PR.
+              </div>
+            )}
 
-            <div className="flex flex-wrap gap-2">
-              <button onClick={submitPR} disabled={submitting} className="btn-gold">
-                {submitting ? "Opening PR…" : "Ship it — open PR"}
+            {result.edits.map((b, i) => (
+              <div key={`${b.edit.file}-${i}`} className="space-y-3">
+                {result.edits.length > 1 && (
+                  <div className="text-xs uppercase tracking-widest text-text-dim">
+                    Edit {i + 1} of {result.edits.length}
+                  </div>
+                )}
+                <GuardrailBanner guardrails={b.guardrails} />
+                <ImpactBanner impact={b.impact} />
+                <DiffPreview edit={b.edit} fileContent={b.fileContent} />
+              </div>
+            ))}
+
+            <div className="flex flex-wrap gap-2 pt-2">
+              <button
+                onClick={submitPR}
+                disabled={submitting || anyBlocked}
+                className="btn-gold"
+                title={anyBlocked ? "One or more edits are blocked by brand guardrails" : undefined}
+              >
+                {submitting
+                  ? "Opening PR…"
+                  : anyBlocked
+                  ? "Blocked"
+                  : result.edits.length > 1
+                  ? `Ship all ${result.edits.length} — open PR`
+                  : "Ship it — open PR"}
               </button>
               <button onClick={saveDraft} disabled={savedDraft} className="btn-ghost">
                 {savedDraft ? "Saved" : "Save for later"}
               </button>
+              <SchedulePicker
+                disabled={anyBlocked}
+                onSchedule={async (iso) => {
+                  if (!repo || !result) return;
+                  if (DEMO) {
+                    alert(`Demo mode: would schedule PR for ${new Date(iso).toLocaleString()}`);
+                    return;
+                  }
+                  const res = await fetch("/api/schedule", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      repoOwner: repo.owner,
+                      repoName: repo.name,
+                      baseBranch: repo.defaultBranch,
+                      request: result.request,
+                      scheduledFor: iso,
+                      edits: result.edits.map((b) => ({
+                        file: b.edit.file,
+                        originalText: b.edit.originalText,
+                        newText: b.edit.newText,
+                        explanation: b.edit.explanation,
+                      })),
+                    }),
+                  });
+                  if (!res.ok) throw new Error((await res.json()).error ?? "Schedule failed");
+                }}
+              />
               <button
                 onClick={() => runAnalyze(request)}
                 disabled={analyzing}

@@ -1,0 +1,26 @@
+{
+  "$schema": "Drop this file in the ROOT of your repo as `markin.config.json`. MarkIn will respect these rules on every edit.",
+
+  "allowedFiles": [
+    "src/app/**/page.tsx",
+    "src/content/**/*.{md,mdx}",
+    "public/copy/**/*.json"
+  ],
+
+  "lockedFiles": [
+    "**/api/**",
+    "**/auth/**",
+    "**/middleware.ts",
+    "**/.env*",
+    "package.json",
+    "package-lock.json"
+  ],
+
+  "lockedComponents": ["Footer", "Pricing", "AuthGate"],
+
+  "bannedPhrases": ["lorem ipsum", "TODO", "FIXME"],
+
+  "maxLinesChanged": 40,
+
+  "requirePR": true
+}

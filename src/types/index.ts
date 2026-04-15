@@ -23,11 +23,38 @@ export interface FileEdit {
   explanation: string;
 }
 
+export interface GuardrailPayload {
+  allowed: boolean;
+  reason?: string;
+  warnings: string[];
+  configActive: boolean;
+}
+
+export interface BatchEdit {
+  edit: FileEdit;
+  fileContent: string;
+  guardrails: GuardrailPayload;
+  impact?: ImpactReport;
+}
+
 export interface AnalyzeResponse {
   request: string;
   targets: FileTarget[];
-  edit: FileEdit;
-  fileContent: string;
+  edits: BatchEdit[];
+}
+
+export interface ImpactHit {
+  path: string;
+  url: string;
+  snippet?: string;
+}
+
+export interface ImpactReport {
+  query: string;
+  totalCount: number;
+  hits: ImpactHit[];
+  searched: boolean;
+  reason?: string;
 }
 
 export interface Change {
@@ -40,6 +67,19 @@ export interface Change {
   prUrl?: string | null;
   prNumber?: number | null;
   status: "submitted" | "merged" | "closed";
+  createdAt: string;
+}
+
+export interface ScheduledPR {
+  id: string;
+  request: string;
+  edits: { file: string; originalText: string; newText: string; explanation?: string }[];
+  baseBranch: string;
+  scheduledFor: string;
+  status: "pending" | "submitted" | "failed" | "cancelled";
+  prUrl?: string | null;
+  prNumber?: number | null;
+  failureReason?: string | null;
   createdAt: string;
 }
 

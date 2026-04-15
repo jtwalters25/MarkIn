@@ -68,7 +68,7 @@ POST /api/submit
 
 - **Next.js 14+** (App Router) with TypeScript
 - **Tailwind CSS** with custom dark/gold brand theme
-- **Anthropic Claude API** (`claude-sonnet-4-20250514`) for NL → code edits
+- **Anthropic Claude API** (`claude-sonnet-4-6`) for NL → code edits
 - **GitHub REST API** via Octokit
 - **NextAuth.js** with GitHub OAuth (scope: `repo`, `read:user`, `user:email`)
 - **Prisma + SQLite** for local dev (Postgres-ready for production)

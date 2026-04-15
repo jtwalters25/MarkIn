@@ -1,5 +1,6 @@
 import LandingHero from "@/components/LandingHero";
 import ThemeToggle from "@/components/ThemeToggle";
+import ConnectButton from "@/components/ConnectButton";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -16,10 +17,7 @@ export default function HomePage() {
           <a href="#how" className="hidden sm:inline hover:text-text">How it works</a>
           <a href="#why" className="hidden sm:inline hover:text-text">Why MarkIn</a>
           <ThemeToggle />
-          <Link href="/dashboard" className="btn-gold text-sm py-2 px-3 sm:px-5">
-            <span className="hidden sm:inline">Connect your repo</span>
-            <span className="sm:hidden">Try it</span>
-          </Link>
+          <ConnectButton />
         </nav>
       </header>
 
@@ -69,7 +67,7 @@ export default function HomePage() {
         <p className="text-text-muted mb-8 max-w-xl mx-auto">
           Connect your GitHub repo in 30 seconds. Ship your first edit before lunch.
         </p>
-        <Link href="/dashboard" className="btn-gold">Connect your repo &rarr;</Link>
+        <ConnectButton className="btn-gold" longLabel="Connect your repo →" shortLabel="Connect repo →" />
       </section>
 
       <footer className="px-4 sm:px-8 py-8 border-t border-border-subtle flex flex-wrap gap-4 items-center justify-between text-sm text-text-dim">

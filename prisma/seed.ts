@@ -9,8 +9,7 @@ async function main() {
     create: {
       email: "demo@markin.dev",
       name: "Demo Marketer",
-      githubId: "demo-github-id",
-      avatarUrl: "https://avatars.githubusercontent.com/u/0",
+      image: "https://avatars.githubusercontent.com/u/0",
     },
   });
 

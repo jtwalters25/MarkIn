@@ -7,30 +7,92 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------- NextAuth (PrismaAdapter) models ----------
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  githubId  String   @unique
-  avatarUrl String?
-  repos     Repo[]
-  changes   Change[]
-  drafts    Draft[]
-  createdAt DateTime @default(now())
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  repos         Repo[]
+  changes       Change[]
+  drafts        Draft[]
+  scheduledPRs  ScheduledPR[]
+  createdAt     DateTime  @default(now())
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ---------- MarkIn domain models ----------
+
 model Repo {
-  id        String   @id @default(cuid())
-  owner     String
-  name      String
-  branch    String   @default("main")
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  changes   Change[]
-  drafts    Draft[]
-  createdAt DateTime @default(now())
+  id           String        @id @default(cuid())
+  owner        String
+  name         String
+  branch       String        @default("main")
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  changes      Change[]
+  drafts       Draft[]
+  scheduledPRs ScheduledPR[]
+  createdAt    DateTime      @default(now())
 
   @@unique([owner, name, userId])
+}
+
+model ScheduledPR {
+  id            String   @id @default(cuid())
+  request       String
+  edits         String   // JSON-serialized array of {file, originalText, newText, explanation}
+  baseBranch    String
+  scheduledFor  DateTime
+  status        String   @default("pending") // pending, submitted, failed, cancelled
+  prUrl         String?
+  prNumber      Int?
+  failureReason String?
+  repoId        String
+  repo          Repo     @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  submittedAt   DateTime?
+
+  @@index([status, scheduledFor])
 }
 
 model Change {
@@ -44,9 +106,9 @@ model Change {
   prNumber    Int?
   status      String   @default("submitted")
   repoId      String
-  repo        Repo     @relation(fields: [repoId], references: [id])
+  repo        Repo     @relation(fields: [repoId], references: [id], onDelete: Cascade)
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
 }
 
@@ -58,8 +120,8 @@ model Draft {
   newText     String
   explanation String
   repoId      String
-  repo        Repo     @relation(fields: [repoId], references: [id])
+  repo        Repo     @relation(fields: [repoId], references: [id], onDelete: Cascade)
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
 }
