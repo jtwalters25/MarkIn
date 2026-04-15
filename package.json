@@ -2,7 +2,7 @@
   "name": "markin",
   "version": "0.1.0",
   "private": true,
-  "description": "MarkIn — GitOut. Plain English editing for your marketing site. No Git required.",
+  "description": "MarkIn. GitOut. Plain English editing for your marketing site. No Git required.",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
