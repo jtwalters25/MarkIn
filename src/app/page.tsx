@@ -150,6 +150,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="px-4 sm:px-8 py-20 sm:py-28 border-t border-border-subtle">
+        <div className="max-w-4xl mx-auto">
+          <FadeIn>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              Frequently asked questions
+            </h2>
+          </FadeIn>
+
+          <div className="mt-10 space-y-6">
+            <FadeIn>
+              <div className="card p-6">
+                <h3 className="text-lg font-semibold">What is your refund policy?</h3>
+                <p className="text-text-muted text-sm mt-2 leading-relaxed">
+                  We offer a full refund within 14 days of purchase, no questions asked. If you're not satisfied, contact us and we'll make it right.
+                </p>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="px-4 sm:px-8 py-24 sm:py-32 text-center border-t border-border-subtle">
         <FadeIn>
