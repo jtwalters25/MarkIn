@@ -73,6 +73,6 @@ export async function generateEdit(
     originalText: parsed.original_text,
     newText: parsed.new_text,
     lineNumber: parsed.line_number,
-    explanation: parsed.explanation,
+    explanation: "",
   };
 }

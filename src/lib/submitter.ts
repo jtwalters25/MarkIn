@@ -73,29 +73,25 @@ export async function submitEdits(input: SubmitInput): Promise<SubmitResult> {
     await octokit.rest.repos.createOrUpdateFileContents({
       owner: repoOwner, repo: repoName,
       path: e.file, branch: newBranch,
-      message: `[MarkIn] ${shortExplanation(e.explanation, `Update ${e.file}`)}`,
+      message: `[MarkIn] ${truncate(request, 72) || `Update ${e.file}`}`,
       content: Buffer.from(updated, "utf-8").toString("base64"),
       sha: existing.data.sha,
     });
   }
 
-  function shortExplanation(text: string | undefined, fallback: string): string {
-    if (!text) return fallback;
-    const first = text.split(/[.\n]/)[0].trim();
-    if (first.length <= 72) return first;
-    return first.slice(0, 69) + "...";
+  function truncate(text: string, max: number): string {
+    const trimmed = text.trim();
+    if (trimmed.length <= max) return trimmed;
+    return trimmed.slice(0, max - 3) + "...";
   }
 
-  const title = edits.length === 1
-    ? shortExplanation(edits[0].explanation, `Update ${edits[0].file}`)
-    : `${edits.length} coordinated edits`;
+  const title = truncate(request, 72) || `Update ${edits.length} file${edits.length > 1 ? "s" : ""}`;
 
   const description = [
-    `**Original request:**`,
     `> ${request}`,
     ``,
     `**Files changed (${edits.length}):**`,
-    ...edits.map((e) => `- \`${e.file}\`: ${shortExplanation(e.explanation, "updated")}`),
+    ...edits.map((e) => `- \`${e.file}\``),
     ``,
     `_Submitted via MarkIn. GitOut._`,
   ].join("\n");
