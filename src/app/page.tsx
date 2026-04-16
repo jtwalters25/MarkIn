@@ -71,7 +71,7 @@ export default function HomePage() {
               <Step n="1" title="Describe" body="Type it in plain English. No code, no jargon.">
                 <div className="card p-4 font-sans text-text-muted">
                   <span className="text-text-dim text-xs mr-2">›</span>
-                  Change pricing from $29 to $49
+                  Change pricing from $49 to $69
                 </div>
               </Step>
             </FadeIn>
