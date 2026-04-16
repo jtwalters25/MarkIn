@@ -150,6 +150,30 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="px-4 sm:px-8 py-20 sm:py-28 border-t border-border-subtle">
+        <div className="max-w-4xl mx-auto">
+          <FadeIn>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              Frequently asked questions
+            </h2>
+          </FadeIn>
+
+          <div className="mt-10 space-y-6">
+            {[
+              { q: "What is your refund policy?", a: "We offer a full refund within 14 days of purchase, no questions asked. Just reach out to our support team and we'll process it promptly." },
+            ].map((faq, i) => (
+              <FadeIn key={faq.q} delay={i * 80}>
+                <div className="card p-6">
+                  <h3 className="text-lg font-semibold">{faq.q}</h3>
+                  <p className="text-text-muted text-sm mt-2 leading-relaxed">{faq.a}</p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="px-4 sm:px-8 py-24 sm:py-32 text-center border-t border-border-subtle">
         <FadeIn>
