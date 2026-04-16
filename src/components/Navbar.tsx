@@ -14,7 +14,7 @@ export default function Navbar({ activeRepo }: { activeRepo?: string }) {
     <header className="px-4 sm:px-6 py-4 border-b border-border-subtle">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 sm:gap-6 min-w-0">
-          <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
             <div className="w-7 h-7 rounded-md bg-gold/10 border border-gold/30 flex items-center justify-center">
               <span className="text-gold font-bold text-sm">M</span>
             </div>

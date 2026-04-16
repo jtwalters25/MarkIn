@@ -73,24 +73,31 @@ export async function submitEdits(input: SubmitInput): Promise<SubmitResult> {
     await octokit.rest.repos.createOrUpdateFileContents({
       owner: repoOwner, repo: repoName,
       path: e.file, branch: newBranch,
-      message: `[MarkIn] ${e.explanation ?? `Update ${e.file}`}`,
+      message: `[MarkIn] ${shortExplanation(e.explanation, `Update ${e.file}`)}`,
       content: Buffer.from(updated, "utf-8").toString("base64"),
       sha: existing.data.sha,
     });
   }
 
+  function shortExplanation(text: string | undefined, fallback: string): string {
+    if (!text) return fallback;
+    const first = text.split(/[.\n]/)[0].trim();
+    if (first.length <= 72) return first;
+    return first.slice(0, 69) + "...";
+  }
+
   const title = edits.length === 1
-    ? edits[0].explanation ?? `Update ${edits[0].file}`
-    : `${edits.length} coordinated edits from MarkIn`;
+    ? shortExplanation(edits[0].explanation, `Update ${edits[0].file}`)
+    : `${edits.length} coordinated edits`;
 
   const description = [
     `**Original request:**`,
     `> ${request}`,
     ``,
     `**Files changed (${edits.length}):**`,
-    ...edits.map((e) => `- \`${e.file}\` — ${e.explanation ?? ""}`),
+    ...edits.map((e) => `- \`${e.file}\`: ${shortExplanation(e.explanation, "updated")}`),
     ``,
-    `_Submitted via MarkIn — GitOut._`,
+    `_Submitted via MarkIn. GitOut._`,
   ].join("\n");
 
   const pr = await octokit.rest.pulls.create({

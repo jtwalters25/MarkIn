@@ -29,4 +29,6 @@ Return ONLY a JSON object:
   "new_text": "the replacement text",
   "line_number": 5,
   "explanation": "Changed the pricing from $29/mo to $49/mo on the homepage"
-}`;
+}
+
+The "explanation" MUST be a single short sentence (under 80 characters). Just state what changed. Do not include reasoning, analysis, or thinking.`;
