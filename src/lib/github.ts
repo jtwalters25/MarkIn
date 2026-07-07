@@ -19,7 +19,10 @@ export async function listRepos(accessToken: string): Promise<Repo[]> {
   const repos = await octokit.paginate(octokit.rest.repos.listForAuthenticatedUser, {
     per_page: 100,
     sort: "updated",
-    affiliation: "owner,collaborator,organization_member",
+    // Only repos the user owns. Including "collaborator" pulls in every repo
+    // they were ever added to (e.g. old bootcamp/course repos owned by others),
+    // which clutters the list with sites they can't meaningfully edit here.
+    affiliation: "owner",
   });
 
   // Filter for likely Next.js / React projects.
