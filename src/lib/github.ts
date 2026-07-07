@@ -25,15 +25,11 @@ export async function listRepos(accessToken: string): Promise<Repo[]> {
     affiliation: "owner",
   });
 
-  // Filter for likely Next.js / React projects.
-  // We can't peek at package.json for every repo cheaply, so we rely on language hints
-  // and let the user pick. Filter excludes archived/disabled repos.
+  // Exclude archived/disabled repos, but don't filter by language: GitHub's
+  // primary-language detection is unreliable (a Next.js repo can be tagged
+  // Python/Shell/etc.), which silently hid repos the user owns. Let the user pick.
   return repos
     .filter((r) => !r.archived && !r.disabled)
-    .filter((r) => {
-      const lang = (r.language || "").toLowerCase();
-      return ["typescript", "javascript", "tsx", "jsx", "html", ""].includes(lang);
-    })
     .map((r) => ({
       id: String(r.id),
       owner: r.owner.login,
