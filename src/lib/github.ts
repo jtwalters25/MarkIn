@@ -2,7 +2,16 @@ import { Octokit } from "octokit";
 import type { Repo } from "@/types";
 
 export function octokitFor(accessToken: string) {
-  return new Octokit({ auth: accessToken });
+  return new Octokit({
+    auth: accessToken,
+    request: {
+      // Next.js patches global fetch and caches GET responses in its Data Cache
+      // by default. Octokit uses that fetch, so without this the GitHub repo list
+      // (and file contents) get served stale — e.g. showing repos you've deleted.
+      fetch: (url: string | URL | Request, options?: RequestInit) =>
+        fetch(url, { ...options, cache: "no-store" }),
+    },
+  });
 }
 
 export async function listRepos(accessToken: string): Promise<Repo[]> {

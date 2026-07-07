@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { listRepos } from "@/lib/github";
 import { DEMO_REPOS, isDemoMode } from "@/lib/demo";
 
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 export async function GET() {
   if (isDemoMode()) {
     return NextResponse.json({ repos: DEMO_REPOS });
